@@ -184,7 +184,7 @@ class DownloadService extends BaseService {
     debug.sendStatus('All downloads are fetched');
   }
 
-  createDownloadAction({url, saveTo}) {
+  createDownloadAction({url, saveTo, saveName}) {
     debug.sendStatus('Try to create download');
 
     try {
@@ -200,7 +200,8 @@ class DownloadService extends BaseService {
     let downloadTask = M3U8DownloadTask.create({
       url,
       options: {
-        saveTo
+        saveTo,
+        saveName
       }
     });
 

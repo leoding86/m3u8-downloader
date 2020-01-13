@@ -27,6 +27,16 @@
       </el-form-item>
 
       <el-form-item
+        label="Save name"
+        :label-width="formLabelWidth"
+      >
+        <el-input
+          ref="saveNameInput"
+          v-model="download.saveName"
+        ></el-input>
+      </el-form-item>
+
+      <el-form-item
         :label="$t('_save_to')"
         :label-width="formLabelWidth"
       >
@@ -77,7 +87,8 @@ export default {
 
       download: {
         url: '',
-        saveTo: ''
+        saveTo: '',
+        saveName: ''
       },
 
       addDownloadRule: {
