@@ -96,7 +96,7 @@ class DownloadTask extends EventEmitter {
 
   get id() {
     if (this.urlHash === null) {
-      this.urlHash = new MD5().update('42').digest('hex');
+      this.urlHash = new MD5().update(this.url).digest('hex');
     }
 
     return this.urlHash;
