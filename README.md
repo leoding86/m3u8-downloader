@@ -1,10 +1,11 @@
 # U3M8 Downloader
 
-## Requirements
+## 需求
 
-* You need ffmpeg installed in your computer to use this application
-* You need to have a avaliable M3U8 media resource url
+* 你需要在你的机器中安装ffmpeg并正确设置环境变量
+* 你需要有有效的M3U8地址
+* 启动程序后需要先点击一下右上侧的棒棒糖图标访问目标网站，如果需要下载VIP资源，你首选需要是VIP，并登录到网站
 
-## Limitation
+## 限制
 
-Only support mgtv.com for the moment. Theoretically, it can download any M3U8 media if you can watch the M3U8 media in your browser.
+目前只支持mgtv.com，但是理论上应该可以下载任何有效的M3U8媒体资源
