@@ -274,22 +274,24 @@ class Download extends Request {
         });
 
         response.on('end', () => {
+          downloadTemporaryWriteStream.on('close', () => {
+            this.renameTemporaryFileToSaveFile(path.join(this.saveTo, this.saveName));
+
+            this.speed = 0;
+
+            this.endTime = Date.now();
+
+            this.completeTime = this.endTime - this.startTime;
+
+            this.progress = 1;
+
+            this.setFinish();
+          });
+
           /**
            * Close write stream
            */
           downloadTemporaryWriteStream.close();
-
-          this.renameTemporaryFileToSaveFile(path.join(this.saveTo, this.saveName));
-
-          this.speed = 0;
-
-          this.endTime = Date.now();
-
-          this.completeTime = this.endTime - this.startTime;
-
-          this.progress = 1;
-
-          this.setFinish();
         });
 
         response.on('error', error => {
