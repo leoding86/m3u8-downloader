@@ -17,6 +17,14 @@ class M3U8DownloadTask extends DownloadTask {
     this.tempFileWriteStream = null;
   }
 
+  get saveName() {
+    if (this.options.saveName) {
+      return this.options.saveName;
+    } else {
+      return this.id;
+    }
+  }
+
   /**
    * Create a M3U8 download task
    * @param {Object} options
@@ -116,7 +124,7 @@ class M3U8DownloadTask extends DownloadTask {
 
       this.download.on('dl-response-data', data => {
         if (!this.tempFile) {
-          this.tempFile = path.join(this.options.saveTo, this.id)
+          this.tempFile = path.join(this.options.saveTo, this.saveName)
           this.tempFileWriteStream =  fs.createWriteStream(this.tempFile);
         }
 
@@ -132,18 +140,22 @@ class M3U8DownloadTask extends DownloadTask {
         this.setDownloading();
 
         if (index >= segments.length - 1) {
+          this.tempFileWriteStream.on('close', () => {
+            this.savedTarget = this.tempFile + '.mp4';
+
+            const command = `ffmpeg -y -i "${this.tempFile.replace(/\\/g, "\\\\")}" -acodec copy -vcodec copy "${this.savedTarget.replace(/\\/g, "\\\\")}"`;
+
+            exec(command, (error, stdout, stderr) => {
+              fs.unlink(this.tempFile);
+
+              this.setFinish();
+            });
+          });
+
           /**
            * Close file stream
            */
           this.tempFileWriteStream.close();
-
-          this.savedTarget = this.tempFile + '.mp4';
-
-          exec(`ffmpeg -f -i ${this.tempFile} -acodec copy -vcodec copy ${this.savedTarget}`, () => {
-            fs.unlink(this.tempFile);
-
-            this.setFinish();
-          });
 
           this.download = null;
           return;
