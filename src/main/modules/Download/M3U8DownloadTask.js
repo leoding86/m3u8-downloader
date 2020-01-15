@@ -1,6 +1,7 @@
 import path from 'path';
 import { exec } from 'child_process';
 import fs from 'fs-extra';
+import Utils from '@/modules/Utils';
 import M3U8FileParser from 'm3u8-file-parser';
 import DownloadTask from './DownloadTask';
 import Request from '@/modules/Net/Request';
@@ -37,6 +38,10 @@ class M3U8DownloadTask extends DownloadTask {
 
     downloadTask.url = url;
     downloadTask.options = Object.assign({}, options);
+
+    if (downloadTask.options.saveName) {
+      downloadTask.options.saveName = Utils.FormatName.replaceIllegalChars(downloadTask.options.saveName);
+    }
 
     return downloadTask;
   }
