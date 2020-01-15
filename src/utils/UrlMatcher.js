@@ -1,6 +1,6 @@
 class UrlMatcher {
-  static isMatch() {
-    return false;
+  static isMatch(text) {
+    return text.match(/^m3u8-downloader:\/{2}/);
   }
 }
 
