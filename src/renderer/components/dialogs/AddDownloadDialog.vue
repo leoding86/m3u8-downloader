@@ -31,6 +31,7 @@
         :label-width="formLabelWidth"
       >
         <el-input
+          type="textarea"
           v-model="download.m3u8"
         ></el-input>
       </el-form-item>
@@ -116,7 +117,8 @@ export default {
       try {
         let data = JSON.parse(decodeURIComponent(text.slice(18)));
         this.download.saveName = data.title;
-        this.download.url = data.url;
+        this.download.m3u8 = data.m3u8 || '';
+        this.download.url = data.url || '';
       } catch (error) {
         throw error;
       }

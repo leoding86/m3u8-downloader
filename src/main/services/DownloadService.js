@@ -197,22 +197,28 @@ class DownloadService extends BaseService {
       return;
     }
 
-    if (url) {
-      let downloadTask = M3U8DownloadTask.createFromM3U8({
+    let downloadTask = null;
+
+    if (m3u8) {
+      downloadTask = M3U8DownloadTask.createFromM3U8({
         m3u8,
         options: {
           saveTo,
           saveName
         }
       });
-    } else {
-      let downloadTask = M3U8DownloadTask.create({
+    } else if (url) {
+      downloadTask = M3U8DownloadTask.create({
         url,
         options: {
           saveTo,
           saveName
         }
       });
+    } else {
+      debug.sendStatus('Cannot create download task');
+
+      return;
     }
 
     /**
