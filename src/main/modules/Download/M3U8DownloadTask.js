@@ -1,7 +1,8 @@
 import path from 'path';
 import { exec } from 'child_process';
 import fs from 'fs-extra';
-import { FormatName } from '@/modules/Utils';
+import MD5 from 'md5.js';
+import FormatName from '@/modules/Utils/FormatName';
 import M3U8FileParser from 'm3u8-file-parser';
 import DownloadTask from './DownloadTask';
 import Request from '@/modules/Net/Request';
@@ -75,7 +76,7 @@ class M3U8DownloadTask extends DownloadTask {
     downloadTask.options = Object.assign({}, options);
 
     if (downloadTask.options.saveName) {
-      downloadTask.options.saveName = Utils.FormatName.replacceIllegalChars(downloadTask.options.saveName);
+      downloadTask.options.saveName = FormatName.replaceIllegalChars(downloadTask.options.saveName);
     }
 
     return downloadTask;
@@ -132,7 +133,7 @@ class M3U8DownloadTask extends DownloadTask {
     });
   }
 
-  getSegumentsFromM3U8(m3u8) {
+  getSegmentsFromM3U8(m3u8) {
     let reader = new M3U8FileParser();
     reader.read(m3u8);
 
@@ -146,6 +147,10 @@ class M3U8DownloadTask extends DownloadTask {
   }
 
   getBaseUrl(url) {
+    if (!url) {
+      return;
+    }
+
     let matches = url.match(/^https?:\/{2}[^?]+/);
 
     if (!matches) {
@@ -248,6 +253,8 @@ class M3U8DownloadTask extends DownloadTask {
   }
 
   start() {
+    this.setStart('Start');
+
     this.getSegments().then(segments => {
       let baseUrl = this.getBaseUrl(this.url);
 
