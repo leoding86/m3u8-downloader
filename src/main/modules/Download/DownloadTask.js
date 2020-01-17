@@ -108,7 +108,11 @@ class DownloadTask extends EventEmitter {
   }
 
   get title() {
-    return this.id;
+    if (this.options.saveName) {
+      return this.options.saveName;
+    } else {
+      return this.id;
+    }
   }
 
   /**

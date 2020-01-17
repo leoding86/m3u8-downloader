@@ -113,7 +113,13 @@ export default {
     let text = clipboard.readText('selection').trim();
 
     if (UrlMatcher.isMatch(text)) {
-      this.download.url = text;
+      try {
+        let data = JSON.parse(decodeURIComponent(text.slice(18)));
+        this.download.saveName = data.title;
+        this.download.url = data.url;
+      } catch (error) {
+        throw error;
+      }
     }
 
     this.download.saveTo = this.settings.saveTo;
