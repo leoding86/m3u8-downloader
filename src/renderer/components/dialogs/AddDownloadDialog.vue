@@ -27,6 +27,15 @@
       </el-form-item>
 
       <el-form-item
+        label="M3U8"
+        :label-width="formLabelWidth"
+      >
+        <el-input
+          v-model="download.m3u8"
+        ></el-input>
+      </el-form-item>
+
+      <el-form-item
         label="Save name"
         :label-width="formLabelWidth"
       >
@@ -87,14 +96,13 @@ export default {
 
       download: {
         url: '',
+        m3u8: '',
         saveTo: '',
         saveName: ''
       },
 
       addDownloadRule: {
-        url: [
-          { required: true, message: this.$t('_please_input_url'), trigger: 'blur' }
-        ]
+        //
       },
 
       checking: false
