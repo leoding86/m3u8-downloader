@@ -184,7 +184,7 @@ class DownloadService extends BaseService {
     debug.sendStatus('All downloads are fetched');
   }
 
-  createDownloadAction({url, saveTo, saveName}) {
+  createDownloadAction({url, m3u8, saveTo, saveName}) {
     debug.sendStatus('Try to create download');
 
     try {
@@ -197,13 +197,23 @@ class DownloadService extends BaseService {
       return;
     }
 
-    let downloadTask = M3U8DownloadTask.create({
-      url,
-      options: {
-        saveTo,
-        saveName
-      }
-    });
+    if (url) {
+      let downloadTask = M3U8DownloadTask.createFromM3U8({
+        m3u8,
+        options: {
+          saveTo,
+          saveName
+        }
+      });
+    } else {
+      let downloadTask = M3U8DownloadTask.create({
+        url,
+        options: {
+          saveTo,
+          saveName
+        }
+      });
+    }
 
     /**
      * Check if is there same download in DownloadManager, if so, send a error message to renderer
