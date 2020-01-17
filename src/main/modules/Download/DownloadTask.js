@@ -28,6 +28,11 @@ class DownloadTask extends EventEmitter {
     this.download = null;
 
     /**
+     * @type {String}
+     */
+    this._id = null;
+
+    /**
      * @type {string}
      */
     this.url = null;

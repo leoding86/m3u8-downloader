@@ -13,9 +13,27 @@ class M3U8DownloadTask extends DownloadTask {
 
     this.type = 'M3U8';
 
+    this.m3u8 = null;
+
     this.tempFile = null;
 
     this.tempFileWriteStream = null;
+  }
+
+  get id() {
+    if (this._id === null) {
+      if (this.url) {
+        this._id = new MD5().update(this.url).digest('hex');
+      } else if (this.m3u8) {
+        this._id = new MD5().update(this.m3u8).digest('hex');
+      } else {
+        throw Error('Cannot generate download id, both the url and m3u8 of the download task are null');
+      }
+    } else {
+      return this._id;
+    }
+
+    return this._id;
   }
 
   get saveName() {
@@ -46,7 +64,24 @@ class M3U8DownloadTask extends DownloadTask {
     return downloadTask;
   }
 
-  getSegments(url) {
+  /**
+   * Create a M3U8 download task from M3U8 content
+   * @param {Object.{m3u8: String, options.{Object}}} options
+   */
+  static createFromM3U8({m3u8, options}) {
+    let downloadTask = new M3U8DownloadTask();
+
+    downloadTask.m3u8 = m3u8;
+    downloadTask.options = Object.assign({}, options);
+
+    if (downloadTask.options.saveName) {
+      downloadTask.options.saveName = Utils.FormatName.replacceIllegalChars(downloadTask.options.saveName);
+    }
+
+    return downloadTask;
+  }
+
+  getSegmentsFromUrl(url) {
     return new Promise((resolve, reject) => {
       this.request = new Request({
         url: url,
@@ -95,6 +130,19 @@ class M3U8DownloadTask extends DownloadTask {
 
       this.request.end();
     });
+  }
+
+  getSegumentsFromM3U8(m3u8) {
+    let reader = new M3U8FileParser();
+    reader.read(m3u8);
+
+    const result = reader.getResult();
+
+    if (!result) {
+      return Promise.reject(Error('Cannot resolve M3U8'));
+    }
+
+    return Promise.resolve(result.segments);
   }
 
   getBaseUrl(url) {
@@ -189,19 +237,24 @@ class M3U8DownloadTask extends DownloadTask {
     });
   }
 
-  start() {
-    this.setStart('Parse M3U8 content');
+  getSegments() {
+    if (this.m3u8) {
+      return this.getSegmentsFromM3U8.call(this, this.m3u8);
+    }
 
-    this.getSegments(this.url).then(segments => {
+    if (this.url) {
+      return this.getSegmentsFromUrl.call(this, this.url);
+    }
+  }
+
+  start() {
+    this.getSegments().then(segments => {
       let baseUrl = this.getBaseUrl(this.url);
 
-      if (!baseUrl) {
-        this.setError('Unsupported url');
-        return;
-      }
-
       segments.map(segument => {
-        segument.url = baseUrl + segument.url;
+        if (baseUrl && !/^http/.test(segument.url)) {
+          segument.url = baseUrl + segument.url;
+        }
 
         return segument;
       });
